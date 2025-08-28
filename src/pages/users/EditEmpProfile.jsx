@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from '../../components/Spinner';
 import StoreNavbar from "../../components/navbar/staffheader/StoreNavbar";
@@ -6,6 +6,7 @@ import StaffFooter from "../../components/footer/stafffooter/StaffFooter";
 import { enqueueSnackbar } from "notistack";
 import { MdOutlineCancel } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function EditEmpProfile() {
     const [userProfile, setUserProfile] = useState({
@@ -13,35 +14,20 @@ function EditEmpProfile() {
         lastName: "",
         email: "",
         phoneNumber: "",
-        password: "" // Password is initially blank and update if only need to 
+        password: ""
     });
-    const [empID, setempID] = useState("");
     const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const navigate = useNavigate();
+    const { user, isLoggedIn, logout } = useAuth();
 
-    // Fetch empID on component mount
+    // Fetch user profile based on authenticated user
     useEffect(() => {
-        const token = localStorage.getItem("emptoken");
-        if (token) {
-            axios
-                .post("http://localhost:3000/empLogin/empAuth", { token })
+        if (isLoggedIn && user && user.role === 'employee') {
+            axios.get('http://localhost:3005/auth/profile')
                 .then((response) => {
-                    setempID(response.data.empID);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    enqueueSnackbar("Error fetching user ID:", { variant: "error" });
-                });
-        }
-    }, []);
-
-    // Fetch user profile based on empID
-    useEffect(() => {
-        if (empID) {
-            axios.get(`http://localhost:3000/empLogin/${empID}`)
-                .then((response) => {
-                    const { firstName, lastName, email, phoneNumber } = response.data;
+                    const profileData = response.data.user || response.data;
+                    const { firstName, lastName, email, phoneNumber } = profileData;
                     setUserProfile({ firstName, lastName, email, phoneNumber, password: "" });
                     setLoading(false);
                 })
@@ -50,7 +36,7 @@ function EditEmpProfile() {
                     enqueueSnackbar("Error fetching profile information:", { variant: "error" });
                 });
         }
-    }, [empID]);
+    }, [user, isLoggedIn]);
 
     // Handle input change
     const handleInputChange = (e, field) => {
@@ -85,7 +71,7 @@ function EditEmpProfile() {
         }
 
         try {
-            const response = await axios.put(`http://localhost:3000/emps/${empID}`, userProfile);
+            const response = await axios.put('http://localhost:3005/auth/profile', userProfile);
             console.log("Profile information saved:", response.data);
             enqueueSnackbar("Profile updated successfully.", { variant: "success" });
             navigate("/EmpProfile")
@@ -98,10 +84,10 @@ function EditEmpProfile() {
     // Handle delete profile
     const handleDeleteProfile = async () => {
         try {
-            const response = await axios.delete(`http://localhost:3000/emps/${empID}`);
+            const response = await axios.delete('http://localhost:3005/auth/profile');
             console.log("Profile deleted:", response.data);
             enqueueSnackbar("Profile deleted successfully", { variant: "success" });
-            localStorage.removeItem("emptoken");
+            logout();
             navigate("/EmpRegister");
         } catch (error) {
             console.error(error);

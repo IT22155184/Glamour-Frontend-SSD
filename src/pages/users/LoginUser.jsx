@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -8,21 +8,40 @@ import Logo from "../../components/navbar/NavbarLogo";
 import Input from '../../components/form/Input'; // Ensure you have this component
 import Spinner from '../../components/Spinner';
 import Footer from '../../components/footer/Footer';
+import { storeAuthData } from '../../utils/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const methods = useForm();
     const { handleSubmit } = methods;
+    const { login } = useAuth();
 
     const handleLogin = async (data) => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:3000/login', data);
+            const response = await axios.post('http://localhost:3005/auth/login', data);
             setLoading(false);
-            console.log(response.data.token);
-            localStorage.setItem("token", response.data.token);
-            navigate('/HomeCus');
+            
+            if (response.data.success) {
+                // Store authentication data using new format
+                storeAuthData(response.data);
+                
+                // Update auth context
+                login(response.data);
+                
+                // Redirect based on user role
+                if (response.data.userType === 'customer') {
+                    navigate('/HomeCus');
+                } else {
+                    navigate('/login'); // Fallback
+                }
+                
+                enqueueSnackbar(`Welcome back, ${response.data.user.firstName}!`, { variant: "success" });
+            } else {
+                enqueueSnackbar("Login failed", { variant: "error" });
+            }
         } catch (error) {
             setLoading(false);
             enqueueSnackbar("Invalid email or password", { variant: "error" });

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Link } from "react-router-dom";
-import Input from '../../components/form/Input'; // Ensure you have this component
+import Input from '../../components/form/Input';
 import StaffFooter from "../../components/footer/stafffooter/StaffFooter";
 import Spinner from '../../components/Spinner';
 import {pnoValidation} from '../../utils/inputValidations';
@@ -21,7 +21,7 @@ const EmpSignup = () => {
         setLoading(true);
         try {
             console.log(data)
-            await axios.post('http://localhost:3000/emps', data);
+            await axios.post('http://localhost:3005/auth/register', data);
             setLoading(false);
             navigate('/EmpLogin');
         } catch (error) {

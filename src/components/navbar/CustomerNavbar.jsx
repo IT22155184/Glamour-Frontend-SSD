@@ -1,15 +1,15 @@
 import Logo from "./NavbarLogo.jsx";
 import DropDownButton from "../button/DropDownButton.jsx";
 import { mens, womens } from "../../utils/arrays.js";
-// import { CiSearch } from "react-icons/ci";
 import Search from "./Search.jsx";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CustomerNavbar = () => {
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const { isLoggedIn, logout, user } = useAuth();
 
   return (
     <div className="h-[70px] flex-row justify-between bg-white mt-3 shadow-md hidden md:flex">
@@ -46,18 +46,18 @@ const CustomerNavbar = () => {
             >
               Addresses
             </Link>
-            {token && (
+            {isLoggedIn && (
               <button
                 className="rounded-md text-start p-2 my-2 block  text-secondary  hover:bg-secondary hover:text-primary"
                 onClick={() => {
-                  localStorage.removeItem("token");
+                  logout();
                   navigate("/login");
                 }}
               >
                 Logout
               </button>
             )}
-            {!token && (
+            {!isLoggedIn && (
               <Link
                 to="/login"
                 className="rounded-md p-2 my-2 block  text-secondary  hover:bg-secondary hover:text-primary"
