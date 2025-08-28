@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from "../../components/Spinner";
 import Navbar from "../../components/navbar/CustomerNavbar.jsx";
@@ -6,6 +6,7 @@ import Footer from "../../components/footer/Footer.jsx";
 import { enqueueSnackbar } from "notistack";
 import { MdOutlineCancel } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function EditProfile() {
   const [userProfile, setUserProfile] = useState({
@@ -13,36 +14,21 @@ function EditProfile() {
     lastName: "",
     email: "",
     phoneNumber: "",
-    password: "", // Password is initially blank and update if only need to
+    password: "",
   });
-  const [userID, setuserID] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false); 
   const navigate = useNavigate();
+  const { user, isLoggedIn, logout } = useAuth();
 
-  // Fetch userID on component mount
+  // Fetch user profile based on authenticated user
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    if (isLoggedIn && user) {
       axios
-        .post("http://localhost:3000/login/auth", { token })
+        .get('http://localhost:3005/auth/profile')
         .then((response) => {
-          setuserID(response.data.userID);
-        })
-        .catch((err) => {
-          console.error(err);
-          enqueueSnackbar("Error fetching user ID:", { variant: "error" });
-        });
-    }
-  }, []);
-
-  // Fetch user profile based on userID
-  useEffect(() => {
-    if (userID) {
-      axios
-        .get(`http://localhost:3000/login/${userID}`)
-        .then((response) => {
-          const { firstName, lastName, email, phoneNumber } = response.data;
+          const profileData = response.data.user || response.data;
+          const { firstName, lastName, email, phoneNumber } = profileData;
           setUserProfile({
             firstName,
             lastName,
@@ -57,7 +43,7 @@ function EditProfile() {
           enqueueSnackbar("Error fetching profile information:", { variant: "error" });
         });
     }
-  }, [userID]);
+  }, [user, isLoggedIn]);
 
   // Handle input change
   const handleInputChange = (e, field) => {
@@ -98,7 +84,7 @@ function EditProfile() {
 
     try {
       const response = await axios.put(
-        `http://localhost:3000/users/${userID}`,
+        'http://localhost:3005/auth/profile',
         userProfile
       );
       console.log("Profile information saved:", response.data);
@@ -114,11 +100,11 @@ function EditProfile() {
   const handleDeleteProfile = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:3000/users/${userID}`
+        'http://localhost:3005/auth/profile'
       );
       console.log("Profile deleted:", response.data);
       enqueueSnackbar("Profile deleted successfully", { variant: "success" });
-      localStorage.removeItem("token");
+      logout();
       navigate("/Register");
     } catch (error) {
       console.error(error);

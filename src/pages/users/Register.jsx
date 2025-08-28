@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -21,7 +21,7 @@ const Signup = () => {
         setLoading(true);
         try {
             console.log(data)
-            await axios.post('http://localhost:3000/users', data);
+            await axios.post('http://localhost:3005/auth/register', data);
             setLoading(false);
             navigate('/login');
         } catch (error) {

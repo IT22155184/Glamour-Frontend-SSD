@@ -5,37 +5,23 @@ import { Link } from "react-router-dom";
 import NavbarUserProfile from "../NavbarUserProfile";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const StoreNavbar = (props) => {
   const [profileInfo, setProfileInfo] = useState({});
-  const [empID, setempID] = useState("");
+  const { user, isLoggedIn } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem("emptoken");
-    axios
-      .post("http://localhost:3000/empLogin/empAuth", { token: token })
-      .then((response) => {
-        setempID(response.data.empID)
-        if (!response.data.status) {
-          window.location.href = "/EmpLogin";
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-
-  useEffect(() => {
-    if (empID.length > 0) { 
-      axios.get(`http://localhost:3000/empLogin/${empID}`)
+    if (isLoggedIn && user && user.role === 'employee') {
+      axios.get('http://localhost:3005/auth/profile')
         .then((response) => {
           console.log(response.data)
-          setProfileInfo(response.data);
+          setProfileInfo(response.data.user || response.data);
         }).catch((error) => {
           console.error("Error fetching profile information:", error);
         });
     }
-  }, [empID]);
+  }, [user, isLoggedIn]);
 
   return (
     <div className="">

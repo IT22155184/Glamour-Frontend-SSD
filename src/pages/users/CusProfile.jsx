@@ -1,49 +1,32 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/navbar/CustomerNavbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Profile = () => {
     const [userProfile, setUserProfile] = useState([]);
-    const [userID, setuserID] = useState("");
     const [measurements, setMeasurements] = useState(null);
     const [loadingMeasurements, setLoadingMeasurements] = useState(true);
+    const { user, isLoggedIn } = useAuth();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        axios
-            .post("http://localhost:3000/login/auth", { token: token })
-            .then((response) => {
-                setuserID(response.data.userID)
-                if (response.data.status === false) {
-                    window.location.href = "/login";
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    });
-
-    useEffect(() => {
-        if (userID) {
+        if (isLoggedIn && user) {
+            // Fetch user profile using the auth/profile endpoint
             axios
-                .get(`http://localhost:3000/login/${userID}`)
+                .get('http://localhost:3005/auth/profile')
                 .then((response) => {
                     console.log(response.data);
-                    setUserProfile(response.data);
+                    setUserProfile(response.data.user || response.data);
                 })
                 .catch((error) => {
                     console.error("Error fetching profile information:", error);
                 });
-        }
-    }, [userID]);
-
-    // Fetch body measurements for the user
-    useEffect(() => {
-        if (userID) {
+                
+            // Fetch body measurements for the user
             axios
-                .get(`http://localhost:3000/measurements/user/${userID}`)
+                .get(`http://localhost:3005/measurements/user/${user._id}`)
                 .then((response) => {
                     console.log(response.data);
                     if (response.data) {
@@ -57,7 +40,7 @@ const Profile = () => {
                     setLoadingMeasurements(false);
                 });
         }
-    }, [userID]);
+    }, [user, isLoggedIn]);
 
     return (
         <div>

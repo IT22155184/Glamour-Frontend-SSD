@@ -1,41 +1,27 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import StoreNavbar from "../../components/navbar/staffheader/StoreNavbar";
 import StaffFooter from "../../components/footer/stafffooter/StaffFooter";
+import { useAuth } from "../../contexts/AuthContext";
 
 const EmpProfile = () => {
     const [userProfile, setUserProfile] = useState([]);
-    const [empID, setempID] = useState("");
+    const { user, isLoggedIn } = useAuth();
 
     useEffect(() => {
-        const token = localStorage.getItem("emptoken");
-        axios
-            .post("http://localhost:3000/empLogin/empAuth", { token: token })
-            .then((response) => {
-                setempID(response.data.empID)
-                if (response.data.status === false) {
-                    window.location.href = "/EmpLogin";
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    });
-
-    useEffect(() => {
-        if (empID) {
+        if (isLoggedIn && user && user.role === 'employee') {
             axios
-                .get(`http://localhost:3000/empLogin/${empID}`)
+                .get('http://localhost:3005/auth/profile')
                 .then((response) => {
                     console.log(response.data);
-                    setUserProfile(response.data);
+                    setUserProfile(response.data.user || response.data);
                 })
                 .catch((error) => {
                     console.error("Error fetching profile information:", error);
                 });
         }
-    }, [empID]);
+    }, [user, isLoggedIn]);
 
     return (
         <div>
