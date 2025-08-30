@@ -42,7 +42,6 @@ const EmpLogin = () => {
           enqueueSnackbar(`Invalid login`, {
             variant: "error",
           });
-          navigate("/EmpLogin");
         }
       } else {
         enqueueSnackbar("Login failed", { variant: "error" });
