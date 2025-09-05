@@ -21,7 +21,7 @@ const CusAddresses = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post("http://localhost:3000/login/auth", { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
             .then((response) => {
                 setuserID(response.data.userID)
                 if (response.data.status === false) {
@@ -37,7 +37,7 @@ const CusAddresses = () => {
         if(userID)
         {setLoading(true);
 
-        axios.get(`http://localhost:3000/deliveryInfo/${userID}`)
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${userID}`)
             .then((response) => {
                 setAddresses(response.data);
                 setLoading(false);

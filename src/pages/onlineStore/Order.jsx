@@ -14,7 +14,7 @@ const Order = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .post("http://localhost:3000/login/auth", { token: token })
+      .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
       .then((response) => {
         setuserID(response.data.userID)
         if (response.data.status === false) {
@@ -67,7 +67,7 @@ const Order = () => {
   useEffect(() => {
     if(userID)
     {setLoading(true);
-    fetch(`http://localhost:3000/orders/${userID}`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/${userID}`)
       .then((response) => response.json())
       .then((data) => {
         setOrders(data);

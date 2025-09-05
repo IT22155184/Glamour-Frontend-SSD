@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/cusItems/trending")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/cusItems/trending`)
       .then((response) => {
         setItems(response.data);
         setLoading(false);

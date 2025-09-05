@@ -13,7 +13,7 @@ const DeleteMeasurement = ({ id, onClose }) => {
   const handleDeleteMeasurement = () => {
     setLoading(true);
     axios
-      .delete(`http://localhost:3000/measurements/${id}`)
+      .delete(`${import.meta.env.VITE_API_BASE_URL}/measurements/${id}`)
       .then(() => {
         setLoading(false);
         window.location.reload(true);

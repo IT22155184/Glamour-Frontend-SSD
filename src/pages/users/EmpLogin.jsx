@@ -21,7 +21,7 @@ const EmpLogin = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3005/auth/login",
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
         data
       );
       setLoading(false);

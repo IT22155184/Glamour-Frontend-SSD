@@ -10,7 +10,7 @@ const DeleteOrder = ({ id, onClose }) => {
 
     const handleDelete = () => {
         setLoading(true);
-        axios.put(`http://localhost:3000/orders/${id}`, { status: "Canceled" })
+        axios.put(`${import.meta.env.VITE_API_BASE_URL}/orders/${id}`, { status: "Canceled" })
             .then((response) => {
                 console.log(response);
                 window.location.reload();

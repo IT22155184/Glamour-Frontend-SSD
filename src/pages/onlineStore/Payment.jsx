@@ -14,7 +14,7 @@ const Payment = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post("http://localhost:3000/login/auth", { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
             .then((response) => {
                 setuserID(response.data.userID)
                 if (response.data.status === false) {
@@ -121,7 +121,7 @@ const Payment = () => {
             const deliveryid = localStorage.getItem("deliveryInfoId");
             console.log(deliveryid)
             setLoading(true);
-            axios.get(`http://localhost:3000/deliveryInfo/delivery/${deliveryid}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/delivery/${deliveryid}`)
                 .then((response) => {
                     setDeliveryInfo(response.data);
                     console.log(response.data)
@@ -135,7 +135,7 @@ const Payment = () => {
     useEffect(() => {
         if (userID) {
             setLoading(true);
-            axios.get(`http://localhost:3000/cart/${userID}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}`)
                 .then((response) => {
                     setCart(response.data);
                     setLoading(false);
@@ -183,7 +183,7 @@ const Payment = () => {
 
             try {
                 setLoading(true);
-                const response = await axios.post(`http://localhost:3000/payment`, payment);
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/payment`, payment);
                 setLoading(false);
 
                 const paymentId = response.data._id;
@@ -205,7 +205,7 @@ const Payment = () => {
                     paymentId: paymentId,
                 };
                 console.log("Order Data: ", ordercon);
-                await axios.post(`http://localhost:3000/orders`, ordercon);
+                await axios.post(`${import.meta.env.VITE_API_BASE_URL}/orders`, ordercon);
 
                 //after a successful payment clear the cart
                 await clearCartItems(userID);
@@ -233,7 +233,7 @@ const Payment = () => {
     //clear the cart after the payment
     const clearCartItems = async (userID) => {
         try {
-            await axios.delete(`http://localhost:3000/cart/${userID}`);
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}`);
             setCart([]);
             // enqueueSnackbar("Cart cleared successfully", { variant: "success" });
         } catch (error) {

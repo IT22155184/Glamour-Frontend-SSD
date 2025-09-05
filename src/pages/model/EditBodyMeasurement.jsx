@@ -26,7 +26,7 @@ const EditMeasurement = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:3000/measurements/${id}`)
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/measurements/${id}`)
       .then((response) => {
         if (response.data) {
           setUniqueName(response.data.UniqueName);
@@ -61,7 +61,7 @@ const EditMeasurement = () => {
       ShoulderWidth,
     }
     setLoading(true);
-    axios.put(`http://localhost:3000/measurements/${id}`, data)
+    axios.put(`${import.meta.env.VITE_API_BASE_URL}/measurements/${id}`, data)
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Measurement updated", { variant: "success" });

@@ -7,7 +7,7 @@ const DeleteStoreItem = ({id, onClose, onDelete}) => {
 
   const handleDelete = () => {
     axios
-      .delete(`http://localhost:3000/items/${id}`)
+      .delete(`${import.meta.env.VITE_API_BASE_URL}/items/${id}`)
       .then(() => {
         onDelete();
         onClose();

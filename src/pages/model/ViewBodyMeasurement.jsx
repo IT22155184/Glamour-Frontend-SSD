@@ -16,7 +16,7 @@ const ViewMeasurement = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post("http://localhost:3000/login/auth", { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
             .then((response) => {
                 setuserID(response.data.userID)
                 if (response.data.status === false) {
@@ -32,7 +32,7 @@ const ViewMeasurement = () => {
     useEffect(() => {
         if (userID) {
             axios
-                .get(`http://localhost:3000/measurements/user/${userID}`)
+                .get(`${import.meta.env.VITE_API_BASE_URL}/measurements/user/${userID}`)
                 .then((response) => {
                     console.log(response.data);
                     if (response.data) {

@@ -46,7 +46,7 @@ const OngoingOrders = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/orders/completed")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/orders/completed`)
       .then((res) => {
         setOrders(res.data);
         setFilteredData(res.data);
@@ -146,7 +146,7 @@ const OngoingOrders = () => {
                           className="h-11 mx-3 my-2 font-BreeSerif p-2 border-gray-200 rounded-md border-2"
                           onChange={(e) => {
                             axios
-                              .put(`http://localhost:3000/orders/${order._id}`, {
+                              .put(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, {
                                 status: e.target.value,
                               })
                               .then((res) => {
