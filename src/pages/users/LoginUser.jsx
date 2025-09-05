@@ -46,7 +46,17 @@ const Login = () => {
         });
 
         enqueueSnackbar('Login successful!', { variant: 'success' });
-        navigate('/'); // Navigate to home page or dashboard
+        // Role-based navigation for consistency with OAuth flow
+        const userRole = response.data.user?.role || response.data.user?.userType || 'customer';
+        let redirectPath = '/';
+        if (userRole === 'admin') {
+          redirectPath = '/admin';
+        } else if (userRole === 'employee') {
+          redirectPath = '/employee';
+        } else if (userRole === 'customer') {
+          redirectPath = '/dashboard';
+        }
+        navigate(redirectPath);
       } else {
         enqueueSnackbar(response.data.message || 'Login failed', { variant: 'error' });
       }
