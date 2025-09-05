@@ -26,6 +26,7 @@ import EmpRegister from "./pages/users/EmpRegister.jsx";
 import EmpLogin from "./pages/users/EmpLogin.jsx";
 import EmpProfile from "./pages/users/EmpProfile.jsx";
 import EditEmpProfile from "./pages/users/EditEmpProfile.jsx";
+import OAuthCallback from "./pages/users/OAuthCallback.jsx";
 import ModelSizeReport from "./pages/model/ModelSizesReport.jsx";
 import Checkout from "./pages/onlineStore/Checkout.jsx";
 import CusAddresses from "./pages/onlineStore/CusAddresses.jsx";
@@ -155,6 +156,7 @@ const App = () => {
         />
         <Route path="/Register" element={<Register />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route
           path="/cusProfile"
           element={
