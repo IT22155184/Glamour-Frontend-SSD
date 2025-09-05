@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MdError } from "react-icons/md";
 
 const Input = (props) => {
-
   const {
     register,
     formState: { errors },
@@ -41,6 +40,7 @@ const Input = (props) => {
               name={props.name}
               value={props.value}
               onChange={props.onChange}
+              autoComplete={props.autoComplete}
               {...register(props.name, props.validation)}
             />
           ),
@@ -51,6 +51,7 @@ const Input = (props) => {
               type={props.type}
               placeholder={props.placeholder}
               name={props.name}
+              autoComplete={props.autoComplete}
               {...register(props.name, props.validation)}
             />
           ),
@@ -92,6 +93,7 @@ Input.propTypes = {
   min: PropTypes.string,
   max: PropTypes.string,
   value: PropTypes.any,
+  autoComplete: PropTypes.string,
 };
 
 InputError.propTypes = {

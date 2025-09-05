@@ -308,7 +308,7 @@ const AddStoreItem = ({ onClose, onAdd }) => {
         />
         <form onSubmit={handleAdd} noValidate>
           <div className="flex flex-col w-full items-center font-BreeSerif rounded-xl">
-          <img src={image} className='w-60 h-60' ></img>
+            <img src={image} className="w-60 h-60"></img>
             <div className="flex flex-row w-[80%] justify-between">
               <div className="flex flex-col">
                 <label className="ml-0.5 mb-1">Product Id</label>
@@ -507,7 +507,9 @@ const AddStoreItem = ({ onClose, onAdd }) => {
                   name="trending"
                   onChange={(e) => setTrending(e.target.value)}
                 >
-                  <option value="" hidden>Select</option>
+                  <option value="" hidden>
+                    Select
+                  </option>
                   <option value={true}>Yes</option>
                   <option value={false}>No</option>
                 </select>
