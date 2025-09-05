@@ -11,6 +11,8 @@ import ProgressBar from "../../components/ProgressBar.jsx";
 import AddButton from "../../components/button/AddButton.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { MdError } from "react-icons/md";
+import SafeText from "../../components/SafeText.jsx";
+import { sanitizeFormData } from "../../utils/xssProtection.js";
 
 const ProductPage = () => {
   const [amount, setAmount] = useState(1);
@@ -22,14 +24,12 @@ const ProductPage = () => {
   const { id } = useParams();
   const [reviewComment, setReviewComment] = useState("");
   const [rate, setRate] = useState("");
-
   const [rateError, setRateError] = useState("");
   const [reviewCommentError, setReviewCommentError] = useState("");
   const [AmountError, setAmountError] = useState("");
   const [sizeError, setSizeError] = useState("");
   const [colorError, setColorError] = useState("");
   const [userProfile, setUserProfile] = useState([]);
-
   const [reviews, setReviews] = useState([]);
   const [overallRating, setOverallRating] = useState(0);
 
@@ -100,18 +100,6 @@ const ProductPage = () => {
     return isValid;
   }
 
-  // useEffect(() => {
-  //   axios
-  //     .get(`http://localhost:3000/login/${userID}`)
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       setUserProfile(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching profile information:", error);
-  //     });
-  // }, [userID]);
-
   useEffect(() => {
     setLoading(true);
     axios
@@ -144,8 +132,6 @@ const ProductPage = () => {
         setLoading(false);
       });
   }, [id]);
-
-  // console.log(product);
 
   const methods = useForm();
 
@@ -213,11 +199,20 @@ const ProductPage = () => {
     const isValidReviewComment = validateReviewComment(reviewComment);
 
     if (isValidRate && isValidReviewComment) {
+      // Sanitize the review data before sending
+      const sanitizedData = sanitizeFormData({
+        userName: userProfile.firstName + " " + userProfile.lastName,
+        reviewComment: reviewComment
+      }, {
+        userName: { maxLength: 100, stripTags: true },
+        reviewComment: { maxLength: 500, stripTags: true }
+      });
+
       const review = {
         userId: userProfile._id,
-        userName: userProfile.firstName+" "+userProfile.lastName,
+        userName: sanitizedData.userName,
         rating: rate,
-        reviewComment: reviewComment,
+        reviewComment: sanitizedData.reviewComment,
       };
       setLoading(true);
       axios
@@ -247,12 +242,16 @@ const ProductPage = () => {
       <div className="flex flex-row justify-evenly mt-[4%] mb-[6%]">
         <img src={product.image} className="rounded-l-[10px] px-16 w-1/2" />
         <div className="flex flex-col w-1/2">
-          <h1 className=" pb-[2%] text-6xl font-Aboreto text-primary">
-            {product.name}
-          </h1>
-          <p className="mb-[2%] w-[700px] font-BreeSerif text-primary">
-            {product.description}
-          </p>
+          <SafeText 
+            content={product.name}
+            className="pb-[2%] text-6xl font-Aboreto text-primary"
+            maxLength={100}
+          />
+          <SafeText 
+            content={product.description}
+            className="mb-[2%] w-[700px] font-BreeSerif text-primary"
+            maxLength={1000}
+          />
           <p className="mb-[2%] mt-8 text-5xl font-BreeSerif text-primary">
             Rs.{product.minprice}.00
           </p>
