@@ -16,7 +16,7 @@ const Checkout = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post("http://localhost:3000/login/auth", { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
             .then((response) => {
                 setuserID(response.data.userID)
                 if (response.data.status === false) {
@@ -162,7 +162,7 @@ const Checkout = () => {
     useEffect(() => {
         if (userID) {
             setLoading(true);
-            axios.get(`http://localhost:3000/deliveryInfo/${userID}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${userID}`)
                 .then((response) => {
                     setInfo(response.data);
                 }).catch((error) => {
@@ -175,7 +175,7 @@ const Checkout = () => {
     useEffect(() => {
         if (userID) {
             setLoading(true);
-            axios.get(`http://localhost:3000/cart/${userID}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}`)
                 .then((response) => {
                     setCart(response.data);
                     setLoading(false);
@@ -249,7 +249,7 @@ const Checkout = () => {
 
             // sessionStorage.setItem("total", total + 500);
             if (!id) {
-                axios.post(`http://localhost:3000/deliveryInfo/${userID}`, deliveryInfo)
+                axios.post(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${userID}`, deliveryInfo)
                     .then((response) => {
                         console.log(response);
                         localStorage.setItem("deliveryInfoId", response.data._id);
@@ -261,7 +261,7 @@ const Checkout = () => {
                         enqueueSnackbar("Error creating address", { variant: "error" });
                     });
             } else {
-                axios.put(`http://localhost:3000/deliveryInfo/${id}`, deliveryInfo)
+                axios.put(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${id}`, deliveryInfo)
                     .then((response) => {
                         localStorage.setItem("deliveryInfoId", id);
                         console.log(response);

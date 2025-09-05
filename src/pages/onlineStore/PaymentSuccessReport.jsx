@@ -15,7 +15,7 @@ const PaymentSuccessReport = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/payment/${id}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/payment/${id}`)
       .then((response) => {
         setSuccessPayment(response.data);
         setLoading(false);

@@ -27,7 +27,7 @@ const StoreItemsList = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/items")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/items`)
       .then((response) => {
         setLoading(false);
         setStoreItems(response.data);
@@ -41,7 +41,7 @@ const StoreItemsList = () => {
   const loadItems = () => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/items")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/items`)
       .then((response) => {
         setLoading(false);
         setStoreItems(response.data);

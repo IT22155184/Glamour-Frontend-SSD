@@ -15,7 +15,7 @@ const Profile = () => {
         if (isLoggedIn && user) {
             // Fetch user profile using the auth/profile endpoint
             axios
-                .get('http://localhost:3005/auth/profile')
+                .get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
                 .then((response) => {
                     console.log(response.data);
                     setUserProfile(response.data.user || response.data);
@@ -26,7 +26,7 @@ const Profile = () => {
                 
             // Fetch body measurements for the user
             axios
-                .get(`http://localhost:3005/measurements/user/${user._id}`)
+                .get(`${import.meta.env.VITE_API_BASE_URL}/measurements/user/${user._id}`)
                 .then((response) => {
                     console.log(response.data);
                     if (response.data) {

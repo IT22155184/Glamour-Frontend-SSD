@@ -275,7 +275,7 @@ const AddStoreItem = ({ onClose, onAdd }) => {
       };
       console.log(data);
       axios
-        .post("http://localhost:3000/items", data)
+        .post(`${import.meta.env.VITE_API_BASE_URL}/items`, data)
         .then(() => {
           onAdd();
           onClose();

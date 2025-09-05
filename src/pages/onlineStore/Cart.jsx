@@ -18,14 +18,14 @@ const Cart = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-        .post("http://localhost:3000/login/auth", { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
         .then((response) => {
             setuserID(response.data.userID)
             if (response.data.status === false) {
                 window.location.href = "/login";
             }else {
                 axios
-                    .get(`http://localhost:3000/cart/${response.data.userID}`)
+                    .get(`${import.meta.env.VITE_API_BASE_URL}/cart/${response.data.userID}`)
                     .then((response) => {
                         setCart(response.data);
                         console.log(response.data);
@@ -46,7 +46,7 @@ const Cart = () => {
   const loadCart = () => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/cart/${userID}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}`)
       .then((response) => {
         setCart(response.data);
         console.log(response.data);2
@@ -83,7 +83,7 @@ const Cart = () => {
       handleDelete(id);
     }
     axios
-      .put(`http://localhost:3000/cart/minus/${userID}/${id}`)
+      .put(`${import.meta.env.VITE_API_BASE_URL}/cart/minus/${userID}/${id}`)
       .then(() => {
         loadCart();
       })
@@ -112,7 +112,7 @@ const Cart = () => {
       return;
     }
     axios
-      .put(`http://localhost:3000/cart/plus/${userID}/${itemId}/${productId}`)
+      .put(`${import.meta.env.VITE_API_BASE_URL}/cart/plus/${userID}/${itemId}/${productId}`)
       .then(() => {
         loadCart();
       })
@@ -127,7 +127,7 @@ const Cart = () => {
   const handleDelete = (id) => {
     setLoading(true);
     axios
-      .put(`http://localhost:3000/cart/${userID}/${id}`)
+      .put(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}/${id}`)
       .then(() => {
         setLoading(false);
         enqueueSnackbar("Item removed", { variant: "success" });

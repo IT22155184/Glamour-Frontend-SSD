@@ -264,7 +264,7 @@ const AddStoreItem = ({ item, onClose, onEdit }) => {
       };
       console.log(data);
       axios
-        .put(`http://localhost:3000/items/${item._id}`, data)
+        .put(`${import.meta.env.VITE_API_BASE_URL}/items/${item._id}`, data)
         .then(() => {
           onEdit();
           onClose();

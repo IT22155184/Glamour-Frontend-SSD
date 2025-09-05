@@ -16,7 +16,7 @@ const MeasurementTable = () => {
     useEffect(() => {
         setLoading(true);
         axios
-            .get('http://localhost:3000/measurements')
+            .get(`${import.meta.env.VITE_API_BASE_URL}/measurements`)
             .then((response) => {
                 setMeasurements(response.data.data);
                 const set = response.data.data.map(obj => ({ name: obj.UniqueName, _id: obj._id }));

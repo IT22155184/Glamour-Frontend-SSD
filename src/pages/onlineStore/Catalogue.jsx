@@ -95,7 +95,7 @@ const Catalogue = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/cusItems")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/cusItems`)
       .then((response) => {
         setLoading(false);
         setItems(response.data);
@@ -115,12 +115,12 @@ const Catalogue = () => {
     const token = localStorage.getItem("token");
     if (token !== null) {
       axios
-        .post("http://localhost:3000/login/auth", { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
         .then((response) => {
           setuserID(response.data.userID);
           axios
             .get(
-              `http://localhost:3000/measurements/user/${response.data.userID}`
+              `${import.meta.env.VITE_API_BASE_URL}/measurements/user/${response.data.userID}`
             )
             .then((response) => {
               setPersonalized(response.data);

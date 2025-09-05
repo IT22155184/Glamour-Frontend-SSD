@@ -21,7 +21,7 @@ const Signup = () => {
     setLoading(true);
     try {
       console.log(data);
-      await axios.post("http://localhost:3005/auth/register", data);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, data);
       setLoading(false);
       navigate("/login");
     } catch (error) {

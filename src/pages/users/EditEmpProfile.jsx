@@ -24,7 +24,7 @@ function EditEmpProfile() {
     // Fetch user profile based on authenticated user
     useEffect(() => {
         if (isLoggedIn && user && user.role === 'employee') {
-            axios.get('http://localhost:3005/auth/profile')
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
                 .then((response) => {
                     const profileData = response.data.user || response.data;
                     const { firstName, lastName, email, phoneNumber } = profileData;
@@ -71,7 +71,7 @@ function EditEmpProfile() {
         }
 
         try {
-            const response = await axios.put('http://localhost:3005/auth/profile', userProfile);
+            const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`, userProfile);
             console.log("Profile information saved:", response.data);
             enqueueSnackbar("Profile updated successfully.", { variant: "success" });
             navigate("/EmpProfile")
@@ -84,7 +84,7 @@ function EditEmpProfile() {
     // Handle delete profile
     const handleDeleteProfile = async () => {
         try {
-            const response = await axios.delete('http://localhost:3005/auth/profile');
+            const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`);
             console.log("Profile deleted:", response.data);
             enqueueSnackbar("Profile deleted successfully", { variant: "success" });
             logout();

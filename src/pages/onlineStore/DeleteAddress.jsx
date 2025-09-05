@@ -10,7 +10,7 @@ const DeleteAddress = ({ id, onClose }) => {
 
     const handleDelete = () => {
         setLoading(true);
-        axios.delete(`http://localhost:3000/deliveryInfo/${id}`)
+        axios.delete(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${id}`)
             .then(() => {
                 setLoading(true);
                 window.location.reload(true);

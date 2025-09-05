@@ -103,17 +103,17 @@ const ProductPage = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/cusItems/${id}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/cusItems/${id}`)
       .then((response) => {
         setProduct(response.data);
         const token = localStorage.getItem("token");
         if (token !== null) {
           axios
-            .post("http://localhost:3000/login/auth", { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
             .then((response) => {
               setuserID(response.data);
               axios
-                .get(`http://localhost:3000/login/${response.data.userID}`)
+                .get(`${import.meta.env.VITE_API_BASE_URL}/login/${response.data.userID}`)
                 .then((response) => {
                   setUserProfile(response.data);
                 })
@@ -153,7 +153,7 @@ const ProductPage = () => {
       };
       setLoading(true);
       axios
-        .post(`http://localhost:3000/cart/${userID.userID}`, cart)
+        .post(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID.userID}`, cart)
         .then((response) => {
           console.log(response);
           setLoading(false);
@@ -170,7 +170,7 @@ const ProductPage = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/reviews/${id}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/reviews/${id}`)
       .then((response) => {
         setReviews(response.data);
         // Calculate overall rating
@@ -216,7 +216,7 @@ const ProductPage = () => {
       };
       setLoading(true);
       axios
-        .post(`http://localhost:3000/reviews/${id}`, review)
+        .post(`${import.meta.env.VITE_API_BASE_URL}/reviews/${id}`, review)
         .then((response) => {
           console.log(response);
           setLoading(false);

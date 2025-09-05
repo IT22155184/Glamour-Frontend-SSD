@@ -10,7 +10,7 @@ const ViewPayment = ({ paymentId, onClose }) => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3000/payment/${paymentId}`)
+      .get(`${import.meta.env.VITE_API_BASE_URL}/payment/${paymentId}`)
       .then((response) => {
         setSuccessPayment(response.data);
         setLoading(false);

@@ -46,7 +46,7 @@ const OngoingOrders = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/orders/ongoing")
+      .get(`${import.meta.env.VITE_API_BASE_URL}/orders/ongoing`)
       .then((res) => {
         setOrders(res.data);
         setFilteredData(res.data);
@@ -147,7 +147,7 @@ const OngoingOrders = () => {
                         onChange={(e) => {
                           setLoading(true);
                           axios
-                            .put(`http://localhost:3000/orders/${order._id}`, {
+                            .put(`${import.meta.env.VITE_API_BASE_URL}/orders/${order._id}`, {
                               status: e.target.value,
                             })
                             .then((res) => {

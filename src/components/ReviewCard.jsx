@@ -16,7 +16,7 @@ const ReviewCard = ({ reviews, profile, id }) => {
 
   const deleteReview = (reviewId) => {
     axios
-      .delete(`http://localhost:3000/reviews/${id}/${reviewId}`)
+      .delete(`${import.meta.env.VITE_API_BASE_URL}/reviews/${id}/${reviewId}`)
       .then((response) => {
         console.log(response);
       })

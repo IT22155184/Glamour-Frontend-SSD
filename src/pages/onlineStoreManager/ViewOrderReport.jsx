@@ -26,7 +26,7 @@ const ViewOrderReport = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get("http://localhost:3000/orders/monthly", { params: { month, year } })
+      .get(`${import.meta.env.VITE_API_BASE_URL}/orders/monthly`, { params: { month, year } })
       .then((res) => {
         setOrders(res.data);
         setLoading(false);

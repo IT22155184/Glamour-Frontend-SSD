@@ -13,7 +13,7 @@ const StoreNavbar = (props) => {
 
   useEffect(() => {
     if (isLoggedIn && user && user.role === 'employee') {
-      axios.get('http://localhost:3005/auth/profile')
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
         .then((response) => {
           console.log(response.data)
           setProfileInfo(response.data.user || response.data);

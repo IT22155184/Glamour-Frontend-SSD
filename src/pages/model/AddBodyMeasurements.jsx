@@ -23,7 +23,7 @@ const AddMeasurement = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-        .post("http://localhost:3000/login/auth", { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
         .then((response) => {
             console.log(response.data.userID)
             setuserID(response.data.userID)
@@ -41,7 +41,7 @@ const handleSaveMeasurement = async (data) => {
       MeasurementID: userID 
     };
 
-    await axios.post('http://localhost:3000/measurements', formData);
+    await axios.post(`${import.meta.env.VITE_API_BASE_URL}/measurements`, formData);
     setLoading(false);
     navigate('/cusProfile');
   } catch (error) {

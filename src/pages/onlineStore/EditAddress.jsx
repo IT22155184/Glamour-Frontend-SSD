@@ -166,7 +166,7 @@ const EditAddress = ({ caddress, onClose }) => {
                 province,
                 district
             };
-            axios.put(`http://localhost:3000/deliveryInfo/${caddress._id}`, data)
+            axios.put(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${caddress._id}`, data)
                 .then(() => {
                     setLoading(false);
                     window.location.reload(true);

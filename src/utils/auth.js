@@ -47,7 +47,7 @@ export const logout = async () => {
   // Call logout endpoint if token exists
   if (accessToken) {
     try {
-      await axios.post('http://localhost:3005/auth/logout');
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`);
     } catch (error) {
       console.error('Logout endpoint failed:', error);
       // Continue with local logout even if endpoint fails
@@ -84,7 +84,7 @@ export const verifyToken = async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:3005/auth/verify', {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, {
       token: accessToken
     });
     
@@ -110,7 +110,7 @@ export const refreshAccessToken = async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:3005/auth/refresh', {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
       refreshToken: refreshToken
     });
 
