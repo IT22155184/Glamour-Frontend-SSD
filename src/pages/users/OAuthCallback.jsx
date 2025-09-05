@@ -17,36 +17,38 @@ const OAuthCallback = () => {
       const userParam = urlParams.get('user');
 
       if (accessToken && refreshToken && userParam) {
+        let user;
         try {
-          const user = JSON.parse(decodeURIComponent(userParam));
-          
-          const authData = {
-            accessToken,
-            refreshToken,
-            user,
-            userType: user.role
-          };
-
-          // Store authentication data
-          storeAuthData(authData);
-
-          // Update auth context
-          login(authData);
-
-          enqueueSnackbar(`Welcome, ${user.firstName}!`, {
-            variant: 'success',
-          });
-
-          // Redirect based on user role
-          if (user.role === 'customer') {
-            navigate('/HomeCus');
-          } else if (user.role === 'employee') {
-            navigate('/Store_Manager');
-          }
+          user = JSON.parse(decodeURIComponent(userParam));
         } catch (error) {
-          console.error('OAuth callback error:', error);
+          console.error('Invalid user data:', error);
           enqueueSnackbar('Authentication failed', { variant: 'error' });
           navigate('/LoginUser');
+          return;
+        }
+        
+        const authData = {
+          accessToken,
+          refreshToken,
+          user,
+          userType: user.role
+        };
+
+        // Store authentication data
+        storeAuthData(authData);
+
+        // Update auth context
+        login(authData);
+
+        enqueueSnackbar(`Welcome, ${user.firstName}!`, {
+          variant: 'success',
+        });
+
+        // Redirect based on user role
+        if (user.role === 'customer') {
+          navigate('/HomeCus');
+        } else if (user.role === 'employee') {
+          navigate('/Store_Manager');
         }
       } else {
         enqueueSnackbar('Authentication failed', { variant: 'error' });
