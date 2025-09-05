@@ -45,16 +45,7 @@ const Login = () => {
           refreshToken: response.data.refreshToken
         });
 
-        enqueueSnackbar('Login successful!', { variant: 'success' });
-        // Role-based navigation for consistency with OAuth flow
-        const userRole = response.data.user?.role || response.data.user?.userType || 'customer';
-        let redirectPath = '/';
-        if (userRole === 'admin') {
-          redirectPath = '/admin';
-        } else if (userRole === 'employee') {
-          redirectPath = '/employee';
-        } else if (userRole === 'customer') {
-          redirectPath = '/dashboard';
+          redirectPath = '/HomeCus';
         }
         navigate(redirectPath);
       } else {
