@@ -14,9 +14,35 @@ const EmpLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const methods = useForm();
-  const { handleSubmit } = methods;
-  const { login } = useAuth();
 
+  // Traditional login handler
+  const handleLogin = async (data) => {
+    setLoading(true);
+    try {
+      // Replace with your actual login API endpoint
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        {
+          email: data.email,
+          password: data.password,
+        }
+      );
+      // Store auth data (token, user info, etc.)
+      storeAuthData(response.data);
+      // Update auth context
+      login(response.data);
+      enqueueSnackbar("Login successful!", { variant: "success" });
+      // Redirect to dashboard or home
+      navigate("/EmpDashboard");
+    } catch (error) {
+      enqueueSnackbar(
+        error?.response?.data?.message || "Login failed. Please try again.",
+        { variant: "error" }
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google?role=employee`;
   };
 
