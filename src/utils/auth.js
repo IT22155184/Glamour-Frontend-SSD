@@ -84,8 +84,12 @@ export const verifyToken = async () => {
   }
 
   try {
+    const userData = getUserData();
+    const userType = userData?.role || 'customer';
+    
     const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, {
-      token: accessToken
+      token: accessToken,
+      userType: userType
     });
     
     if (response.data.success) {
