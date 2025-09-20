@@ -61,7 +61,8 @@ export const logout = async () => {
 export const isAuthenticated = () => {
   const accessToken = getAccessToken();
   const userData = getUserData();
-  return !!(accessToken && userData);
+  
+  return !!(userData && (accessToken || userData.googleId));
 };
 
 // Get user role
@@ -79,12 +80,27 @@ export const hasRole = (requiredRole) => {
 // Verify token with backend
 export const verifyToken = async () => {
   const accessToken = getAccessToken();
+  const userData = getUserData();
+  
+  // try to verify using the profile endpoint with cookies
+  if (!accessToken && userData?.googleId) {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`);
+      if (response.data.success) {
+        return { valid: true, user: response.data.user };
+      }
+    } catch (error) {
+      console.error('OAuth token verification failed:', error);
+      return { valid: false, user: null };
+    }
+  }
+  
+  // For regular users with localStorage tokens
   if (!accessToken) {
     return { valid: false, user: null };
   }
 
   try {
-    const userData = getUserData();
     const userType = userData?.role || 'customer';
     
     const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, {
@@ -134,13 +150,15 @@ export const refreshAccessToken = async () => {
 
 // Setup axios interceptor for automatic token attachment
 export const setupAxiosInterceptors = () => {
-  // Request interceptor to add token to headers
+  // Request interceptor to add token to headers and include credentials for cookie auth
   axios.interceptors.request.use(
     (config) => {
       const accessToken = getAccessToken();
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
+      // Always include credentials for cookie-based authentication (OAuth)
+      config.withCredentials = true;
       return config;
     },
     (error) => {
