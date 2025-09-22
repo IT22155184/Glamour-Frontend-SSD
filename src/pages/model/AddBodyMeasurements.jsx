@@ -32,13 +32,29 @@ const AddMeasurement = () => {
         .catch((err) => {
             console.error(err);
         });
-});
+  }, []);
 
 const handleSaveMeasurement = async (data) => {
   setLoading(true);
   try {
+    if (!userID) {
+      setLoading(false);
+      enqueueSnackbar("User not verified yet. Please try again in a moment.", { variant: "warning" });
+      return;
+    }
+
+    // Normalize Gender to expected values (Male, Female, Other)
+    const normalizedGender = (() => {
+      const value = String(data?.Gender || '').trim().toLowerCase();
+      if (value === 'male') return 'Male';
+      if (value === 'female') return 'Female';
+      if (value === 'other') return 'Other';
+      return data?.Gender; // leave as is; backend will validate
+    })();
+
     const formData = {
       ...data,
+      Gender: normalizedGender,
       MeasurementID: userID 
     };
 
@@ -47,7 +63,8 @@ const handleSaveMeasurement = async (data) => {
     navigate('/cusProfile');
   } catch (error) {
     setLoading(false);
-    enqueueSnackbar("Error adding measurement details", { variant: "error" });
+    const serverMessage = error?.response?.data?.message || error?.message || 'Error adding measurement details';
+    enqueueSnackbar(serverMessage, { variant: "error" });
     console.error(error);
   }
 };
