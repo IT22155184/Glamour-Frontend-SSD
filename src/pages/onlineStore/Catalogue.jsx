@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { mensTops, mensBottoms, mensFliter } from "../../utils/arrays.js";
 import { womensTops, womensBottoms, womensFliter } from "../../utils/arrays.js";
 import { Link } from "react-router-dom";
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const Catalogue = () => {
   const [loading, setLoading] = useState(false);
