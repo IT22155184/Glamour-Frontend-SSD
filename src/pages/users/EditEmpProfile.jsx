@@ -71,7 +71,14 @@ function EditEmpProfile() {
         }
 
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`, userProfile);
+            const payload = {
+                firstName,
+                lastName,
+                email,
+                phoneNumber,
+                ...(password ? { password } : {}),
+            };
+            const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/users/${user._id}?userType=employee`, payload);
             enqueueSnackbar("Profile updated successfully.", { variant: "success" });
             navigate("/EmpProfile")
         } catch (error) {
@@ -83,7 +90,7 @@ function EditEmpProfile() {
     // Handle delete profile
     const handleDeleteProfile = async () => {
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`);
+            const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/users/${user._id}?userType=employee`);
             enqueueSnackbar("Profile deleted successfully", { variant: "success" });
             logout();
             navigate("/EmpRegister");

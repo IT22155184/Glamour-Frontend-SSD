@@ -26,7 +26,7 @@ const Order = () => {
       .catch((err) => {
         console.error(err);
       });
-  });
+  }, []);
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -67,20 +67,33 @@ const Order = () => {
   }
 
   useEffect(() => {
-    if(userID)
-    {setLoading(true);
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/${userID}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setOrders(data);
-        Ongoing(data);
-        setLoading(false);
-      })
-      .catch((error) => {
+    const fetchOrders = async () => {
+      if (!userID) return;
+      try {
+        setLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders/${userID}`);
+        const data = response?.data;
+        if (Array.isArray(data)) {
+          setOrders(data);
+          Ongoing(data);
+        } else {
+          setOrders([]);
+          setFilteredData([]);
+          enqueueSnackbar("Unexpected response when fetching orders", { variant: "warning" });
+        }
+      } catch (error) {
         console.error(error);
+        if (error?.response?.status === 401) {
+          enqueueSnackbar("Session expired. Please log in again.", { variant: "error" });
+          window.location.href = "/login";
+        } else {
+          enqueueSnackbar("Error fetching orders", { variant: "error" });
+        }
+      } finally {
         setLoading(false);
-        enqueueSnackbar("Error fetching orders", { variant: "error" });
-      }, [ongoing]);}
+      }
+    };
+    fetchOrders();
   }, [userID]);
 
   if (loading) {

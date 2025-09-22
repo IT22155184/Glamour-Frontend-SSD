@@ -83,9 +83,16 @@ function EditProfile() {
     }
 
     try {
+      const payload = {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        ...(password ? { password } : {}),
+      };
       const response = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
-        userProfile
+        `${import.meta.env.VITE_API_BASE_URL}/users/${user._id}?userType=customer`,
+        payload
       );
       enqueueSnackbar("Profile updated successfully.", { variant: "success" });
       navigate("/cusProfile");
@@ -99,7 +106,7 @@ function EditProfile() {
   const handleDeleteProfile = async () => {
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/profile`
+        `${import.meta.env.VITE_API_BASE_URL}/users/${user._id}?userType=customer`
       );
       enqueueSnackbar("Profile deleted successfully", { variant: "success" });
       logout();
