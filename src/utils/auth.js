@@ -62,12 +62,33 @@ export const getUserData = () => {
 
 // Clear all auth data
 export const clearAuthData = () => {
+  // Remove known auth keys
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(USER_DATA_KEY);
-  // Also clear old token keys for backward compatibility
+  // Also clear old/legacy keys for backward compatibility
   localStorage.removeItem('token');
   localStorage.removeItem('emptoken');
+  // App-specific persisted keys that can leak previous session context
+  localStorage.removeItem('deliveryInfoId');
+  sessionStorage.removeItem('total');
+
+  // Best-effort: clear all remaining storage for a clean slate
+  try {
+    localStorage.clear();
+  } catch {}
+  try {
+    sessionStorage.clear();
+  } catch {}
+
+  // Proactively expire possible auth cookies (if any)
+  try {
+    const expire = 'expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    document.cookie = `${ACCESS_TOKEN_KEY}=; ${expire}`;
+    document.cookie = `${REFRESH_TOKEN_KEY}=; ${expire}`;
+    document.cookie = `token=; ${expire}`;
+    document.cookie = `refreshToken=; ${expire}`;
+  } catch {}
 };
 
 // Logout user and clear data
@@ -77,7 +98,11 @@ export const logout = async () => {
   // Call logout endpoint if token exists
   if (accessToken) {
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`);
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
     } catch (error) {
       console.error('Logout endpoint failed:', error);
       // Continue with local logout even if endpoint fails
@@ -85,6 +110,12 @@ export const logout = async () => {
   }
   
   clearAuthData();
+  // As a safety, force navigation to login to avoid any in-memory stale state
+  try {
+    if (window?.location?.pathname !== '/login') {
+      window.location.replace('/login');
+    }
+  } catch {}
 };
 
 // Check if user is authenticated
