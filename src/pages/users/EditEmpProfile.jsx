@@ -72,7 +72,6 @@ function EditEmpProfile() {
 
         try {
             const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`, userProfile);
-            console.log("Profile information saved:", response.data);
             enqueueSnackbar("Profile updated successfully.", { variant: "success" });
             navigate("/EmpProfile")
         } catch (error) {
@@ -85,7 +84,6 @@ function EditEmpProfile() {
     const handleDeleteProfile = async () => {
         try {
             const response = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`);
-            console.log("Profile deleted:", response.data);
             enqueueSnackbar("Profile deleted successfully", { variant: "success" });
             logout();
             navigate("/EmpRegister");

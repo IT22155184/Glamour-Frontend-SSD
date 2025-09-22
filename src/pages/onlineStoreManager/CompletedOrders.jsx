@@ -53,13 +53,11 @@ const OngoingOrders = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setLoading(false);
         enqueueSnackbar("Error fetching orders", { variant: "error" });
       });
   }, []);
-
-  console.log(orders);
 
   return (
     <div
@@ -150,13 +148,12 @@ const OngoingOrders = () => {
                                 status: e.target.value,
                               })
                               .then((res) => {
-                                console.log(res);
                                 enqueueSnackbar("Order status updated", {
                                   variant: "success",
                                 });
                               })
                               .catch((err) => {
-                                console.log(err);
+                                console.error(err);
                                 enqueueSnackbar("Error updating order status", {
                                   variant: "error",
                                 });

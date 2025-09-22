@@ -14,15 +14,15 @@ const Payment = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
             .then((response) => {
-                setuserID(response.data.userID)
-                if (response.data.status === false) {
+                setuserID(response.data.userId)
+                if (response.data.success === false) {
                     window.location.href = "/login";
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     });
 
@@ -119,14 +119,12 @@ const Payment = () => {
     useEffect(() => {
         if (userID) {
             const deliveryid = localStorage.getItem("deliveryInfoId");
-            console.log(deliveryid)
             setLoading(true);
             axios.get(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/delivery/${deliveryid}`)
                 .then((response) => {
                     setDeliveryInfo(response.data);
-                    console.log(response.data)
                 }).catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 });
         }
     }, [userID]);
@@ -140,7 +138,7 @@ const Payment = () => {
                     setCart(response.data);
                     setLoading(false);
                 }).catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     setLoading(false);
                 });
         }
@@ -204,7 +202,6 @@ const Payment = () => {
                     total: total + 500,
                     paymentId: paymentId,
                 };
-                console.log("Order Data: ", ordercon);
                 await axios.post(`${import.meta.env.VITE_API_BASE_URL}/orders`, ordercon);
 
                 //after a successful payment clear the cart
@@ -213,7 +210,7 @@ const Payment = () => {
                 enqueueSnackbar("Payment Successful", { variant: "success" });
                 navigate(`/SuccessPayment/${paymentId}`);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 setLoading(false);
                 enqueueSnackbar("Payment Unsuccessful", { variant: "error" });
             }
@@ -237,7 +234,7 @@ const Payment = () => {
             setCart([]);
             // enqueueSnackbar("Cart cleared successfully", { variant: "success" });
         } catch (error) {
-            console.log("Error clearing the cart: ", error);
+            console.error("Error clearing the cart: ", error);
             // enqueueSnackbar("Error clearing cart", { variant: "error" });
         }
     }

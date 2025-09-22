@@ -53,7 +53,7 @@ const OngoingOrders = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setLoading(false);
         enqueueSnackbar("Error fetching orders", { variant: "error" });
       });
@@ -113,10 +113,8 @@ const OngoingOrders = () => {
                     <div className="flex justify-center gap-x-4">
                       <ViewButton
                         onClick={() => {
-                          console.log(order.deliveryInfo);
                           setDelivery(order.deliveryInfo),
                             setShowDelivery(true);
-                          console.log(showDelivery);
                         }}
                       />
                     </div>
@@ -151,14 +149,13 @@ const OngoingOrders = () => {
                               status: e.target.value,
                             })
                             .then((res) => {
-                              console.log(res);
                               setLoading(false);
                               enqueueSnackbar("Order status updated", {
                                 variant: "success",
                               });
                             })
                             .catch((err) => {
-                              console.log(err);
+                              console.error(err);
                               setLoading(false);
                               enqueueSnackbar("Error updating order status", {
                                 variant: "error",

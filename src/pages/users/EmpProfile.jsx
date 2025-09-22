@@ -14,7 +14,6 @@ const EmpProfile = () => {
             axios
                 .get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
                 .then((response) => {
-                    console.log(response.data);
                     setUserProfile(response.data.user || response.data);
                 })
                 .catch((error) => {

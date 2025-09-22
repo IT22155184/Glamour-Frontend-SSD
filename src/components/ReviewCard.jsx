@@ -18,10 +18,9 @@ const ReviewCard = ({ reviews, profile, id }) => {
     axios
       .delete(`${import.meta.env.VITE_API_BASE_URL}/reviews/${id}/${reviewId}`)
       .then((response) => {
-        console.log(response);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
     window.location.reload(true);
   };

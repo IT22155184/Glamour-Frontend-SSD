@@ -25,13 +25,10 @@ const MeasurementTable = () => {
 
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 setLoading(false);
             });
     }, []);
-
-
-    console.log(data1);
 
     return (
         <div className='w-full h-full bg-secondary bg-fixed bg-no-repeat' style={{ backgroundPosition: 'top right', backgroundSize: 'cover' }}>

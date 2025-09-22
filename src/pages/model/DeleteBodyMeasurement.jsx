@@ -20,7 +20,7 @@ const DeleteMeasurement = ({ id, onClose }) => {
         enqueueSnackbar("Measurement deleted", { variant: "success" });
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
         enqueueSnackbar("Error deleting measurement", { variant: "error" });
       });

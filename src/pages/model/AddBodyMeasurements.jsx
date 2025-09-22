@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Spinner from '../../components/Spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -23,13 +23,12 @@ const AddMeasurement = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
         .then((response) => {
-            console.log(response.data.userID)
-            setuserID(response.data.userID)
+            setuserID(response.data.userId)
         })
         .catch((err) => {
-            console.log(err);
+            console.error(err);
         });
 });
 
@@ -47,7 +46,7 @@ const handleSaveMeasurement = async (data) => {
   } catch (error) {
     setLoading(false);
     enqueueSnackbar("Error adding measurement details", { variant: "error" });
-    console.log(error);
+    console.error(error);
   }
 };
 

@@ -10,14 +10,12 @@ const Profile = () => {
     const [measurements, setMeasurements] = useState(null);
     const [loadingMeasurements, setLoadingMeasurements] = useState(true);
     const { user, isLoggedIn } = useAuth();
-
     useEffect(() => {
         if (isLoggedIn && user) {
             // Fetch user profile using the auth/profile endpoint
             axios
                 .get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
                 .then((response) => {
-                    console.log(response.data);
                     setUserProfile(response.data.user || response.data);
                 })
                 .catch((error) => {
@@ -28,7 +26,6 @@ const Profile = () => {
             axios
                 .get(`${import.meta.env.VITE_API_BASE_URL}/measurements/user/${user._id}`)
                 .then((response) => {
-                    console.log(response.data);
                     if (response.data) {
                         setMeasurements(response.data);
                     }

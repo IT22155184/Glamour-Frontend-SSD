@@ -30,10 +30,9 @@ const ViewOrderReport = () => {
       .then((res) => {
         setOrders(res.data);
         setLoading(false);
-        console.log(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setLoading(false);
         enqueueSnackbar("Error fetching orders", { variant: "error" });
       });
@@ -118,7 +117,6 @@ const ViewOrderReport = () => {
             <tbody>
               {orders.map((order) => {
                 const date = new Date(order.createdAt);
-                console.log(order);
                 return (
                   <tr key={order._id} className="h-8 font-BreeSerif">
                     <td className="border border-slate-700 text-center">

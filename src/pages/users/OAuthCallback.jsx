@@ -11,9 +11,6 @@ const OAuthCallback = () => {
   useEffect(() => {
     const handleOAuthCallback = async () => {
       try {
-        console.log('OAuth Callback Debug Info:');
-        console.log('Full URL:', window.location.href);
-        console.log('Attempting to fetch user profile from backend...');
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`, {
           method: 'GET',
           credentials: 'include',
@@ -24,7 +21,6 @@ const OAuthCallback = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Profile response:', data);
           
           if (data.success && data.user) {
             const user = data.user;

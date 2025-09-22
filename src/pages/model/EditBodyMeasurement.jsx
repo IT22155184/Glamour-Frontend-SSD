@@ -45,7 +45,7 @@ const EditMeasurement = () => {
         setLoading(false);
         setMeasurementExists(false); 
         enqueueSnackbar("An error occurred", { variant: "error" });
-        console.log(error);
+        console.error(error);
       });
   }, [id]);
 
@@ -70,7 +70,7 @@ const EditMeasurement = () => {
       .catch((error) => {
         setLoading(false);
         enqueueSnackbar("Error updating measurement", { variant: "error" });
-        console.log(error);
+        console.error(error);
       })
   };
 

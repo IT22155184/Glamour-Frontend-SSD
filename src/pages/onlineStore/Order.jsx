@@ -14,15 +14,15 @@ const Order = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+      .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
       .then((response) => {
-        setuserID(response.data.userID)
-        if (response.data.status === false) {
+        setuserID(response.data.userId)
+        if (response.data.success === false) {
           window.location.href = "/login";
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   });
 
@@ -75,7 +75,7 @@ const Order = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
         enqueueSnackbar("Error fetching orders", { variant: "error" });
       }, [ongoing]);}

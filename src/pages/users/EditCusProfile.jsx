@@ -87,7 +87,6 @@ function EditProfile() {
         `${import.meta.env.VITE_API_BASE_URL}/auth/profile`,
         userProfile
       );
-      console.log("Profile information saved:", response.data);
       enqueueSnackbar("Profile updated successfully.", { variant: "success" });
       navigate("/cusProfile");
     } catch (error) {
@@ -102,7 +101,6 @@ function EditProfile() {
       const response = await axios.delete(
         `${import.meta.env.VITE_API_BASE_URL}/auth/profile`
       );
-      console.log("Profile deleted:", response.data);
       enqueueSnackbar("Profile deleted successfully", { variant: "success" });
       logout();
       navigate("/Register");

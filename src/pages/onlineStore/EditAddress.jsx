@@ -173,7 +173,7 @@ const EditAddress = ({ caddress, onClose }) => {
                     enqueueSnackbar("Address updated", { variant: "success" });
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     setLoading(false);
                     enqueueSnackbar("Error updating address", { variant: "error" });
                 });

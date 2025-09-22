@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../../components/Spinner.jsx";
 import Navbar from "../../components/navbar/CustomerNavbar.jsx";
@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MdError } from "react-icons/md";
 import SafeText from "../../components/SafeText.jsx";
 import { sanitizeFormData } from "../../utils/xssProtection.js";
+import { useAuth } from '../../contexts/AuthContext.jsx';
 
 const ProductPage = () => {
   const [amount, setAmount] = useState(1);
@@ -22,6 +23,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const navigate = useNavigate();
   const [reviewComment, setReviewComment] = useState("");
   const [rate, setRate] = useState("");
   const [rateError, setRateError] = useState("");
@@ -32,6 +34,7 @@ const ProductPage = () => {
   const [userProfile, setUserProfile] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [overallRating, setOverallRating] = useState(0);
+  const { isLoggedIn, user } = useAuth();
 
   function validateRate(rate) {
     let isValid = true;
@@ -106,39 +109,36 @@ const ProductPage = () => {
       .get(`${import.meta.env.VITE_API_BASE_URL}/cusItems/${id}`)
       .then((response) => {
         setProduct(response.data);
-        const token = localStorage.getItem("token");
-        if (token !== null) {
-          axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
-            .then((response) => {
-              setuserID(response.data);
-              axios
-                .get(`${import.meta.env.VITE_API_BASE_URL}/login/${response.data.userID}`)
-                .then((response) => {
-                  setUserProfile(response.data);
-                })
-                .catch((error) => {
-                  console.error("Error fetching profile information:", error);
-                });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
       });
   }, [id]);
 
+  // Fetch logged-in user's profile using the current auth system
+  useEffect(() => {
+    if (isLoggedIn) {
+      axios
+        .get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
+        .then((response) => {
+          setUserProfile(response.data.user || response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching profile information:", error);
+        });
+    } else {
+      setUserProfile([]);
+    }
+  }, [isLoggedIn]);
+
   const methods = useForm();
 
   const onSubmit = methods.handleSubmit(() => {
-    const token = localStorage.getItem("token");
-    if (token === null) {
-      window.location = "/Login";
+    if (!isLoggedIn) {
+      navigate("/login", { replace: true });
+      return;
     }
     const isValidAmount = validateamount(amount);
     const isValidSize = validateSize(size);
@@ -146,21 +146,24 @@ const ProductPage = () => {
 
     if (isValidAmount && isValidSize && isValidColor) {
       const cart = {
-        product: product._id,
-        quantity: amount,
-        size: size,
-        color: color,
+        items: [
+          {
+            product: product._id,
+            quantity: amount,
+            color: color,
+            size: size,
+          },
+        ],
       };
       setLoading(true);
       axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID.userID}`, cart)
+        .post(`${import.meta.env.VITE_API_BASE_URL}/cart/${user._id}`, cart)
         .then((response) => {
-          console.log(response);
           setLoading(false);
           enqueueSnackbar("Added to cart", { variant: "success" });
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           setLoading(false);
           enqueueSnackbar("Error adding to cart", { variant: "error" });
         });
@@ -182,7 +185,7 @@ const ProductPage = () => {
         setOverallRating(averageRating || 0);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, [id]);
 
@@ -193,20 +196,21 @@ const ProductPage = () => {
     }
     event.preventDefault();
 
-    console.log(userProfile);
-
     const isValidRate = validateRate(rate);
     const isValidReviewComment = validateReviewComment(reviewComment);
 
     if (isValidRate && isValidReviewComment) {
       // Sanitize the review data before sending
-      const sanitizedData = sanitizeFormData({
-        userName: userProfile.firstName + " " + userProfile.lastName,
-        reviewComment: reviewComment
-      }, {
-        userName: { maxLength: 100, stripTags: true },
-        reviewComment: { maxLength: 500, stripTags: true }
-      });
+      const sanitizedData = sanitizeFormData(
+        {
+          userName: userProfile.firstName + " " + userProfile.lastName,
+          reviewComment: reviewComment,
+        },
+        {
+          userName: { maxLength: 100, stripTags: true },
+          reviewComment: { maxLength: 500, stripTags: true },
+        }
+      );
 
       const review = {
         userId: userProfile._id,
@@ -218,7 +222,6 @@ const ProductPage = () => {
       axios
         .post(`${import.meta.env.VITE_API_BASE_URL}/reviews/${id}`, review)
         .then((response) => {
-          console.log(response);
           setLoading(false);
           setRate(0);
           setReviewComment("");
@@ -226,7 +229,7 @@ const ProductPage = () => {
           enqueueSnackbar("Review Added", { variant: "success" });
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           setLoading(false);
           enqueueSnackbar("Error adding review", { variant: "error" });
         });
@@ -242,12 +245,12 @@ const ProductPage = () => {
       <div className="flex flex-row justify-evenly mt-[4%] mb-[6%]">
         <img src={product.image} className="rounded-l-[10px] px-16 w-1/2" />
         <div className="flex flex-col w-1/2">
-          <SafeText 
+          <SafeText
             content={product.name}
             className="pb-[2%] text-6xl font-Aboreto text-primary"
             maxLength={100}
           />
-          <SafeText 
+          <SafeText
             content={product.description}
             className="mb-[2%] w-[700px] font-BreeSerif text-primary"
             maxLength={1000}
@@ -257,7 +260,9 @@ const ProductPage = () => {
           </p>
           <form onSubmit={(e) => e.preventDefault} noValidate>
             <div className="flex flex-col w-1/2 mt-[10%]">
-              <label className=" font-Philosopher text-primary text-3xl mt-[10%]">Amount</label>
+              <label className=" font-Philosopher text-primary text-3xl mt-[10%]">
+                Amount
+              </label>
               <AnimatePresence mode="wait" initial={false}>
                 {AmountError && (
                   <motion.p className="flex items-center my-1 gap-1 px-2 font-semibold w-fit text-red-500 bg-red-100 rounded-md">
@@ -282,7 +287,9 @@ const ProductPage = () => {
               </div>
             </div>
             {product.stock === 0 && (
-              <p className="text-red-500 font-BreeSerif text-3xl">Out of stock</p>
+              <p className="text-red-500 font-BreeSerif text-3xl">
+                Out of stock
+              </p>
             )}
             {product.stock > 0 && product.stock < 5 && (
               <p className="text-red-500">
@@ -389,7 +396,9 @@ const ProductPage = () => {
       <hr className="mx-4 mb-4 border-1 border-primary" />
 
       <div className="flex flex-col items-center mb-[6%] w-full ">
-        <h1 className="text-4xl mb-4 font-bold font-Aboreto text-primary">Reviews</h1>
+        <h1 className="text-4xl mb-4 font-bold font-Aboreto text-primary">
+          Reviews
+        </h1>
         <div className="flex flex-row justify-evenly w-fit bg-secondary p-4 rounded-xl">
           <div className="text-[20px] font-BreeSerif text-primary mx-10">
             Overall Rating
@@ -456,7 +465,7 @@ const ProductPage = () => {
       <div className="mx-16">
         <ReviewCard reviews={product.reviews} profile={userProfile} id={id} />
       </div>
-      <div className="h-20"/>
+      <div className="h-20" />
       <Footer />
     </div>
   );

@@ -16,15 +16,15 @@ const Checkout = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
             .then((response) => {
-                setuserID(response.data.userID)
-                if (response.data.status === false) {
+                setuserID(response.data.userId)
+                if (response.data.success === false) {
                     window.location.href = "/login";
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     });
 
@@ -166,7 +166,7 @@ const Checkout = () => {
                 .then((response) => {
                     setInfo(response.data);
                 }).catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 });
         }
     }, [userID]);
@@ -180,7 +180,7 @@ const Checkout = () => {
                     setCart(response.data);
                     setLoading(false);
                 }).catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     setLoading(false);
                 });
         }
@@ -251,25 +251,23 @@ const Checkout = () => {
             if (!id) {
                 axios.post(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${userID}`, deliveryInfo)
                     .then((response) => {
-                        console.log(response);
                         localStorage.setItem("deliveryInfoId", response.data._id);
                         enqueueSnackbar("Delivery Information Saved", { variant: "success" });
                         navigate('/Payment'); //navigate to payment
                     })
                     .catch((error) => {
-                        console.log(error);
+                        console.error(error);
                         enqueueSnackbar("Error creating address", { variant: "error" });
                     });
             } else {
                 axios.put(`${import.meta.env.VITE_API_BASE_URL}/deliveryInfo/${id}`, deliveryInfo)
                     .then((response) => {
                         localStorage.setItem("deliveryInfoId", id);
-                        console.log(response);
                         enqueueSnackbar("Delivery Information Saved", { variant: "success" });
                         navigate('/Payment'); // navigate to payment
                     })
                     .catch((error) => {
-                        console.log(error);
+                        console.error(error);
                         enqueueSnackbar("Error updating address", { variant: "error" });
                     });
             }

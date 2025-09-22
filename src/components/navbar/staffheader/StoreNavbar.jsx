@@ -15,7 +15,7 @@ const StoreNavbar = (props) => {
     if (isLoggedIn && user && user.role === 'employee') {
       axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`)
         .then((response) => {
-          console.log(response.data)
+          console.error(response.data)
           setProfileInfo(response.data.user || response.data);
         }).catch((error) => {
           console.error("Error fetching profile information:", error);

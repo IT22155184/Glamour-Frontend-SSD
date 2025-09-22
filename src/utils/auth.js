@@ -15,13 +15,32 @@ export const storeAuthData = (authResponse) => {
   localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
 };
 
+// Helper to get cookie by name
+const getCookie = (name) => {
+  const cookies = document.cookie.split(';');
+  
+  for (let cookie of cookies) {
+    const [cookieName, ...cookieValueParts] = cookie.trim().split('=');
+    if (cookieName === name) {
+      const cookieValue = cookieValueParts.join('=');
+      try {
+        return decodeURIComponent(cookieValue);
+      } catch {
+        return cookieValue;
+      }
+    }
+  }
+  
+  return null;
+};
+
 // Get stored tokens
 export const getAccessToken = () => {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+  return getCookie(ACCESS_TOKEN_KEY) || localStorage.getItem(ACCESS_TOKEN_KEY);
 };
 
 export const getRefreshToken = () => {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
+  return getCookie(REFRESH_TOKEN_KEY) || localStorage.getItem(REFRESH_TOKEN_KEY);
 };
 
 // Get stored user data
@@ -81,8 +100,8 @@ export const hasRole = (requiredRole) => {
 export const verifyToken = async () => {
   const accessToken = getAccessToken();
   const userData = getUserData();
-  
-  // try to verify using the profile endpoint with cookies
+    
+  // For OAuth users, try profile endpoint first if no access token in storage
   if (!accessToken && userData?.googleId) {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/profile`);
@@ -90,35 +109,34 @@ export const verifyToken = async () => {
         return { valid: true, user: response.data.user };
       }
     } catch (error) {
-      console.error('OAuth token verification failed:', error);
       return { valid: false, user: null };
     }
   }
   
-  // For regular users with localStorage tokens
-  if (!accessToken) {
-    return { valid: false, user: null };
-  }
-
-  try {
-    const userType = userData?.role || 'customer';
-    
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, {
-      token: accessToken,
-      userType: userType
-    });
-    
-    if (response.data.success) {
-      return { valid: true, user: response.data.user };
-    } else {
+  // For users with access tokens (either from cookies or localStorage)
+  if (accessToken) {
+    try {
+      const userType = userData?.role || 'customer';
+      
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, {
+        token: accessToken,
+        userType: userType
+      });
+      
+      // Check both 'success' and 'status' properties for compatibility
+      if (response.data.success || response.data.status) {
+        return { valid: true, user: response.data.user };
+      } else {
+        return await refreshAccessToken();
+      }
+    } catch (error) {
+      console.error('Token verification failed:', error);
       // Try to refresh token
       return await refreshAccessToken();
     }
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    // Try to refresh token
-    return await refreshAccessToken();
   }
+  
+  return { valid: false, user: null };
 };
 
 // Refresh access token using refresh token

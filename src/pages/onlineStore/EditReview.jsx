@@ -57,12 +57,11 @@ const EditReview = ({ id, review, onClose}) => {
           enqueueSnackbar("Review updated successfully", {
             variant: "success",
           });
-          console.log(response);
           window.location.reload(true);
         })
         .catch((err) => {
           enqueueSnackbar("Error updating data", { variant: "error" });
-          console.log(err);
+          console.error(err);
         });
     }
   };
