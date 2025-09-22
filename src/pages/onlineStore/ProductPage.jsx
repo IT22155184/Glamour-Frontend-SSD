@@ -190,9 +190,9 @@ const ProductPage = () => {
   }, [id]);
 
   const AddReview = () => {
-    const token = localStorage.getItem("token");
-    if (token === null) {
-      window.location = "/Login";
+    if (!isLoggedIn) {
+      navigate("/login", { replace: true });
+      return;
     }
     event.preventDefault();
 
