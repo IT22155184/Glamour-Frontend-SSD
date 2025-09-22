@@ -48,7 +48,7 @@ const EditReview = ({ id, review, onClose}) => {
       const updatedReview = {
         userId: review.userId,
         userName: review.userName,
-        rating: rate,
+        rating: Number(rate),
         reviewComment: reviewComment,
       };
       axios
