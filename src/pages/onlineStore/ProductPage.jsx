@@ -215,7 +215,7 @@ const ProductPage = () => {
       const review = {
         userId: userProfile._id,
         userName: sanitizedData.userName,
-        rating: rate,
+        rating: Number(rate),
         reviewComment: sanitizedData.reviewComment,
       };
       setLoading(true);
