@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from "react-router-dom";
 import Navbar from "../../components/navbar/CustomerNavbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const ViewMeasurement = () => {
 
@@ -11,9 +12,10 @@ const ViewMeasurement = () => {
     const [loadingMeasurements, setLoadingMeasurements] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = getAccessToken();
+        const userData = getUserData();
         axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
             .then((response) => {
                 setuserID(response.data.userId)
                 if (response.data.success === false) {

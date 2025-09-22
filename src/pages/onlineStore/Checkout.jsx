@@ -2,6 +2,7 @@ import CustomerNavbar from "../../components/navbar/CustomerNavbar";
 import Footer from "../../components/footer/Footer.jsx";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { getAccessToken, getUserData } from "../../utils/auth";
 import { provinces, districts } from "../../utils/arrays.js";
 import Spinner from "../../components/Spinner";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,9 +15,10 @@ const Checkout = () => {
     const [userID, setuserID] = useState(0);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = getAccessToken();
+        const userData = getUserData();
         axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
             .then((response) => {
                 setuserID(response.data.userId)
                 if (response.data.success === false) {

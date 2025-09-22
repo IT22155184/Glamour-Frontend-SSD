@@ -6,15 +6,17 @@ import Footer from '../../components/footer/Footer';
 import ViewPayment from './ViewPayment';
 import DeleteOrder from './DeleteOrder';
 import axios from 'axios';
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const Order = () => {
 
   const [userID, setuserID] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
+    const userData = getUserData();
     axios
-      .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
+      .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
       .then((response) => {
         setuserID(response.data.userId)
         if (response.data.success === false) {

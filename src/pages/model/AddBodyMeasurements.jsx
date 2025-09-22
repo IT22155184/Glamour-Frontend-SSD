@@ -10,6 +10,7 @@ import Navbar from "../../components/navbar/CustomerNavbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
 import {measurementValidation} from '../../utils/inputValidations';
 import {textValidation} from '../../utils/inputValidations';
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 
 const AddMeasurement = () => {
@@ -21,9 +22,10 @@ const AddMeasurement = () => {
   const { handleSubmit } = methods;
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
+    const userData = getUserData();
     axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
         .then((response) => {
             setuserID(response.data.userId)
         })

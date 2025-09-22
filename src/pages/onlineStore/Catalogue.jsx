@@ -110,10 +110,11 @@ const Catalogue = () => {
         console.error(error);
         setLoading(false);
       });
-    const token = localStorage.getItem("token");
+    const token = getAccessToken?.() || localStorage.getItem("token");
+    const userData = getUserData?.();
     if (token !== null) {
       axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
         .then((response) => {
           setuserID(response.data.userId);
           axios
