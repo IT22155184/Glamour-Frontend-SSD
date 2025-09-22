@@ -10,9 +10,20 @@ const USER_DATA_KEY = 'userData';
 export const storeAuthData = (authResponse) => {
   const { accessToken, refreshToken, user } = authResponse;
   
-  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  if (accessToken) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  }
+
+  // Only overwrite refresh token if backend provided a new one
+  if (typeof refreshToken === 'string' && refreshToken.length > 0) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  } else {
+    // keep existing refresh token
+  }
+
+  if (user) {
+    localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  }
 };
 
 // Helper to get cookie by name

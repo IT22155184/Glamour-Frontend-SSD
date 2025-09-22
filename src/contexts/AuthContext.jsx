@@ -26,6 +26,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     initializeAuth();
     checkAuthStatus();
+
+    // Periodic check every 5 minutes to keep session alive
+    const intervalId = setInterval(() => {
+      checkAuthStatus();
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const checkAuthStatus = async () => {
