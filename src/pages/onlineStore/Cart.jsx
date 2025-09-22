@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { MdOutlineDelete } from "react-icons/md";
 import { enqueueSnackbar } from "notistack";
 import Spinner from "../../components/Spinner.jsx";
+import { verifyToken } from "../../utils/auth.js";
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -16,31 +17,34 @@ const Cart = () => {
   const [userID, setuserID] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
-        .then((response) => {
-            setuserID(response.data.userID)
-            if (response.data.status === false) {
-                window.location.href = "/login";
-            }else {
-                axios
-                    .get(`${import.meta.env.VITE_API_BASE_URL}/cart/${response.data.userID}`)
-                    .then((response) => {
-                        setCart(response.data);
-                        console.log(response.data);
-                        setLoading(false);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        setLoading(false);
-                    });
-            }  
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
+    const authenticateAndLoadCart = async () => {
+      try {
+        const authResult = await verifyToken();
+        
+        if (!authResult.valid || !authResult.user) {
+          window.location.href = "/login";
+          return;
+        }
+        
+        setuserID(authResult.user._id);
+        
+        // Load cart data
+        const cartResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/cart/${authResult.user._id}`);
+        setCart(cartResponse.data);
+        setLoading(false);
+        
+      } catch (err) {
+        if (err?.response?.status === 404) {
+          setCart([]);
+        } else {
+          console.error(err);
+        }
+        setLoading(false);
+      }
+    };
+    
+    authenticateAndLoadCart();
+  }, []);
 
 
   const loadCart = () => {
@@ -49,11 +53,10 @@ const Cart = () => {
       .get(`${import.meta.env.VITE_API_BASE_URL}/cart/${userID}`)
       .then((response) => {
         setCart(response.data);
-        console.log(response.data);2
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
         enqueueSnackbar("Error", { variant: "error" });
       });
@@ -88,7 +91,7 @@ const Cart = () => {
         loadCart();
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         enqueueSnackbar("Error", { variant: "error" });
       });
   };
@@ -117,7 +120,7 @@ const Cart = () => {
         loadCart();
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         enqueueSnackbar("Error", { variant: "error" });
       });
   };
@@ -133,7 +136,7 @@ const Cart = () => {
         enqueueSnackbar("Item removed", { variant: "success" });
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
         enqueueSnackbar("Error", { variant: "error" });
       });

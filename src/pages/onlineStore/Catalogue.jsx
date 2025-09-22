@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { mensTops, mensBottoms, mensFliter } from "../../utils/arrays.js";
 import { womensTops, womensBottoms, womensFliter } from "../../utils/arrays.js";
 import { Link } from "react-router-dom";
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const Catalogue = () => {
   const [loading, setLoading] = useState(false);
@@ -85,8 +86,6 @@ const Catalogue = () => {
           .map((size) => size.toLowerCase())
           .includes(inputValue[1].toLowerCase())
       );
-      console.log(filteredwithSizeTops);
-      console.log(filteredwithSizeBottoms);
       const filteredData = filteredwithSizeTops.concat(filteredwithSizeBottoms);
       setFilteredData(filteredData);
     }
@@ -109,18 +108,19 @@ const Catalogue = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
       });
-    const token = localStorage.getItem("token");
+    const token = getAccessToken?.() || localStorage.getItem("token");
+    const userData = getUserData?.();
     if (token !== null) {
       axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
         .then((response) => {
-          setuserID(response.data.userID);
+          setuserID(response.data.userId);
           axios
             .get(
-              `${import.meta.env.VITE_API_BASE_URL}/measurements/user/${response.data.userID}`
+              `${import.meta.env.VITE_API_BASE_URL}/measurements/user/${response.data.userId}`
             )
             .then((response) => {
               setPersonalized(response.data);
@@ -129,11 +129,11 @@ const Catalogue = () => {
               }
             })
             .catch((error) => {
-              console.log(error);
+              console.error(error);
             });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
     }
   }, [userID, recievedData]);

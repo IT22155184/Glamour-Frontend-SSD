@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 import html2pdf from "html2pdf.js";
 
 const ViewBill = ({ bill, onClose }) => {
-
-  console.log(bill);
   const downloadPDF = () => {
     const opt = {
       margin: 1,

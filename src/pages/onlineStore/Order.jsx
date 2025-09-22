@@ -6,25 +6,27 @@ import Footer from '../../components/footer/Footer';
 import ViewPayment from './ViewPayment';
 import DeleteOrder from './DeleteOrder';
 import axios from 'axios';
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const Order = () => {
 
   const [userID, setuserID] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
+    const userData = getUserData();
     axios
-      .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+      .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
       .then((response) => {
-        setuserID(response.data.userID)
-        if (response.data.status === false) {
+        setuserID(response.data.userId)
+        if (response.data.success === false) {
           window.location.href = "/login";
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
-  });
+  }, []);
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,20 +67,33 @@ const Order = () => {
   }
 
   useEffect(() => {
-    if(userID)
-    {setLoading(true);
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/${userID}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setOrders(data);
-        Ongoing(data);
+    const fetchOrders = async () => {
+      if (!userID) return;
+      try {
+        setLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders/${userID}`);
+        const data = response?.data;
+        if (Array.isArray(data)) {
+          setOrders(data);
+          Ongoing(data);
+        } else {
+          setOrders([]);
+          setFilteredData([]);
+          enqueueSnackbar("Unexpected response when fetching orders", { variant: "warning" });
+        }
+      } catch (error) {
+        console.error(error);
+        if (error?.response?.status === 401) {
+          enqueueSnackbar("Session expired. Please log in again.", { variant: "error" });
+          window.location.href = "/login";
+        } else {
+          enqueueSnackbar("Error fetching orders", { variant: "error" });
+        }
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        enqueueSnackbar("Error fetching orders", { variant: "error" });
-      }, [ongoing]);}
+      }
+    };
+    fetchOrders();
   }, [userID]);
 
   if (loading) {

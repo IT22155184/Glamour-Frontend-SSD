@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Spinner from '../../components/Spinner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import Navbar from "../../components/navbar/CustomerNavbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
 import {measurementValidation} from '../../utils/inputValidations';
 import {textValidation} from '../../utils/inputValidations';
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 
 const AddMeasurement = () => {
@@ -21,23 +22,39 @@ const AddMeasurement = () => {
   const { handleSubmit } = methods;
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
+    const userData = getUserData();
     axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+        .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
         .then((response) => {
-            console.log(response.data.userID)
-            setuserID(response.data.userID)
+            setuserID(response.data.userId)
         })
         .catch((err) => {
-            console.log(err);
+            console.error(err);
         });
-});
+  }, []);
 
 const handleSaveMeasurement = async (data) => {
   setLoading(true);
   try {
+    if (!userID) {
+      setLoading(false);
+      enqueueSnackbar("User not verified yet. Please try again in a moment.", { variant: "warning" });
+      return;
+    }
+
+    // Normalize Gender to expected values (Male, Female, Other)
+    const normalizedGender = (() => {
+      const value = String(data?.Gender || '').trim().toLowerCase();
+      if (value === 'male') return 'Male';
+      if (value === 'female') return 'Female';
+      if (value === 'other') return 'Other';
+      return data?.Gender; // leave as is; backend will validate
+    })();
+
     const formData = {
       ...data,
+      Gender: normalizedGender,
       MeasurementID: userID 
     };
 
@@ -46,8 +63,9 @@ const handleSaveMeasurement = async (data) => {
     navigate('/cusProfile');
   } catch (error) {
     setLoading(false);
-    enqueueSnackbar("Error adding measurement details", { variant: "error" });
-    console.log(error);
+    const serverMessage = error?.response?.data?.message || error?.message || 'Error adding measurement details';
+    enqueueSnackbar(serverMessage, { variant: "error" });
+    console.error(error);
   }
 };
 

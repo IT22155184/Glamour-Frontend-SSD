@@ -17,7 +17,7 @@ const DeleteAddress = ({ id, onClose }) => {
                 enqueueSnackbar("Address deleted", { variant: "success" });
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 setLoading(false);
                 enqueueSnackbar("Error deleting address", { variant: "error" });
             });

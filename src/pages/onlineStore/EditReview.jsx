@@ -48,7 +48,7 @@ const EditReview = ({ id, review, onClose}) => {
       const updatedReview = {
         userId: review.userId,
         userName: review.userName,
-        rating: rate,
+        rating: Number(rate),
         reviewComment: reviewComment,
       };
       axios
@@ -57,12 +57,11 @@ const EditReview = ({ id, review, onClose}) => {
           enqueueSnackbar("Review updated successfully", {
             variant: "success",
           });
-          console.log(response);
           window.location.reload(true);
         })
         .catch((err) => {
           enqueueSnackbar("Error updating data", { variant: "error" });
-          console.log(err);
+          console.error(err);
         });
     }
   };

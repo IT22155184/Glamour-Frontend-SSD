@@ -262,7 +262,6 @@ const AddStoreItem = ({ item, onClose, onEdit }) => {
         colors,
         sizes,
       };
-      console.log(data);
       axios
         .put(`${import.meta.env.VITE_API_BASE_URL}/items/${item._id}`, data)
         .then(() => {
@@ -271,7 +270,7 @@ const AddStoreItem = ({ item, onClose, onEdit }) => {
           enqueueSnackbar("Item updated", { variant: "success" });
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           enqueueSnackbar("Error adding item", { variant: "error" });
         });
     } else {

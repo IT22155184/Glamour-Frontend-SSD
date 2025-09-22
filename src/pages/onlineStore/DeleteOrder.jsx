@@ -12,12 +12,11 @@ const DeleteOrder = ({ id, onClose }) => {
         setLoading(true);
         axios.put(`${import.meta.env.VITE_API_BASE_URL}/orders/${id}`, { status: "Canceled" })
             .then((response) => {
-                console.log(response);
                 window.location.reload();
                 enqueueSnackbar("Order Cancelled", { variant: "success" });
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 window.location.reload();
                 enqueueSnackbar("Error Cancelling Order", { variant: "error" });
             });

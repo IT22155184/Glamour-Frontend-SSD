@@ -273,7 +273,6 @@ const AddStoreItem = ({ onClose, onAdd }) => {
         colors,
         sizes,
       };
-      console.log(data);
       axios
         .post(`${import.meta.env.VITE_API_BASE_URL}/items`, data)
         .then(() => {
@@ -282,7 +281,7 @@ const AddStoreItem = ({ onClose, onAdd }) => {
           enqueueSnackbar("Item added", { variant: "success" });
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           enqueueSnackbar("Error adding item", { variant: "error" });
         });
     } else {

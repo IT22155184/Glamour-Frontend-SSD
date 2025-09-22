@@ -34,7 +34,8 @@ export const escapeHTML = (content) => {
   
   return he.encode(content, {
     useNamedReferences: true,
-    decimal: false
+    decimal: false,
+    allowUnsafeSymbols: true,
   });
 };
 

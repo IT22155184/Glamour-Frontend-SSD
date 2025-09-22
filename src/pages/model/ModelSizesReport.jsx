@@ -23,8 +23,6 @@ const ModelSizesReport = () => {
       setLoading(true);
       setError(null);
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/measurements/range?startDate=${startDate}&endDate=${endDate}`);
-
-      console.log(response.data);
       setData(Array.isArray(response.data) ? response.data : []);
       setLoading(false);
     } catch (err) {

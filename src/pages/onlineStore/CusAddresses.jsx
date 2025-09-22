@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { verifyToken } from '../../utils/auth';
 import CustomerNavbar from '../../components/navbar/CustomerNavbar';
 import Footer from '../../components/footer/Footer';
 import Spinner from '../../components/Spinner';
@@ -19,19 +20,20 @@ const CusAddresses = () => {
     const [userID, setuserID] = useState(0);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
-            .then((response) => {
-                setuserID(response.data.userID)
-                if (response.data.status === false) {
+        const run = async () => {
+            try {
+                const result = await verifyToken();
+                if (!result.valid || !result.user) {
                     window.location.href = "/login";
+                    return;
                 }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    });
+                setuserID(result.user._id);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        run();
+    }, []);
 
     useEffect(() => {
         if(userID)
@@ -43,7 +45,11 @@ const CusAddresses = () => {
                 setLoading(false);
             })
             .catch((error) => {
-                console.log(error);
+                if (error?.response?.status === 404) {
+                    setAddresses([]);
+                } else {
+                    console.error(error);
+                }
                 setLoading(false);
             });}
     }, [userID]);

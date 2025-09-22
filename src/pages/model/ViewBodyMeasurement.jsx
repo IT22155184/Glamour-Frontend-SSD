@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
-import Spinner from '../../components/Spinner';
 import Navbar from "../../components/navbar/CustomerNavbar.jsx";
 import Footer from "../../components/footer/Footer.jsx";
-import BackButton from '../../components/button/BackButton.jsx';
+import { getAccessToken, getUserData } from '../../utils/auth';
 
 const ViewMeasurement = () => {
 
@@ -14,17 +12,18 @@ const ViewMeasurement = () => {
     const [loadingMeasurements, setLoadingMeasurements] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = getAccessToken();
+        const userData = getUserData();
         axios
-            .post(`${import.meta.env.VITE_API_BASE_URL}/login/auth`, { token: token })
+            .post(`${import.meta.env.VITE_API_BASE_URL}/auth/verify`, { token: token, userType: userData?.role || 'customer' })
             .then((response) => {
-                setuserID(response.data.userID)
-                if (response.data.status === false) {
+                setuserID(response.data.userId)
+                if (response.data.success === false) {
                     window.location.href = "/login";
                 }
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
             });
     });
 
@@ -34,7 +33,6 @@ const ViewMeasurement = () => {
             axios
                 .get(`${import.meta.env.VITE_API_BASE_URL}/measurements/user/${userID}`)
                 .then((response) => {
-                    console.log(response.data);
                     if (response.data) {
                         setMeasurements(response.data);
                     }

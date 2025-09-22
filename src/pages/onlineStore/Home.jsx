@@ -21,7 +21,7 @@ const Home = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setLoading(false);
         enqueueSnackbar("Error fetching items", { variant: "error" });
       });
